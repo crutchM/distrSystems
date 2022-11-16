@@ -10,3 +10,7 @@ class Link(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     url = Column(String)
+    status = Column(String)
+
+    def serialize(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
