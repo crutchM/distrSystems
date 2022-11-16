@@ -44,6 +44,10 @@ services:
     restart: on-failure
     depends_on:
       - rabbit
+      - redis
+    links:
+      - rabbit
+      - redis
     env_file:
       - .env
 
@@ -57,3 +61,6 @@ services:
     links:
       - web1
       - web2
+
+  redis:
+    image: redis
