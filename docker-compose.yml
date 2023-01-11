@@ -1,66 +1,69 @@
 version: "3.6"
 
 services:
-  db:
-    image: postgres:14.2
-    ports:
-      - 5432:5432
-    volumes:
-      - "/.postgres:/var/lib/postgresql/data"
-    env_file:
-      - .env
-  web1:
-    build: .
-    env_file:
-      - .env
-    depends_on:
-      - db
-      - rabbit
+   db:
+     image: postgres:14.2
+     ports:
+       - 5432:5432
+     volumes:
+       - "/.postgres:/var/lib/postgresql/data"
+     env_file:
+       - .env
+   web1:
+     build: .
+     env_file:
+       - .env
+     depends_on:
+       - db
+       - rabbit
 
-  web2:
-    build: .
-    restart: on-failure
-    env_file:
-      - .env
-    depends_on:
-      - db
-      - rabbit
+   web2:
+     build: .
+     restart: on-failure
+     env_file:
+       - .env
+     depends_on:
+       - db
+       - rabbit
 
-  rabbit:
-    image: rabbitmq:management
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    env_file:
-      - .env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+   rabbit:
+     image: rabbitmq:management
+     ports:
+       - "15672:15672"
+       - "5672:5672"
+     env_file:
+       - .env
+     healthcheck:
+       test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+       interval: 30s
+       timeout: 10s
+       retries: 5
 
-  consumer:
-    build: consumer/
-    restart: on-failure
-    depends_on:
-      - rabbit
-      - redis
-    links:
-      - rabbit
-      - redis
-    env_file:
-      - .env
+   consumer:
+     build: consumer/
+     restart: on-failure
+     depends_on:
+       - rabbit
+       - redis
+     links:
+       - rabbit
+       - redis
+     env_file:
+       - .env
 
-  nginx:
-    build: nginx/.
-    ports:
-      - "80:80"
-    depends_on:
-      - web1
-      - web2
-    links:
-      - web1
-      - web2
+   nginx:
+     build: nginx/.
+     ports:
+       - "80:80"
+     depends_on:
+       - web1
+       - web2
+     links:
+       - web1
+       - web2
 
-  redis:
-    image: redis
+   redis:
+     image: redis
+     ports:
+       - "10888:6379"
+

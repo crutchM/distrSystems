@@ -7,15 +7,14 @@ import requests
 from redis import Redis
 import pika
 
-WEB_HOSTNAME = 'nginx'
-WEB_PORT = '80'
+WEB_HOSTNAME = getenv('WEB_HOSTNAME')
+WEB_PORT = getenv('WEB_PORT')
 
-CACHE_HOSTNAME = 'redis'
-CACHE_PORT = '6379'
+CACHE_HOSTNAME = getenv('CACHE_HOSTNAME')
+CACHE_PORT = getenv('CACHE_PORT')
 
-CONNECTION_URL = f'amqp://user:password@rabbit:5672/%2F'
-
-QUEUE_NAME = 'links'
+CONNECTION = f'amqp://{getenv("RABBITMQ_DEFAULT_USER")}:{getenv("RABBITMQ_DEFAULT_PASS")}@{getenv("BROKER_HOST")}:5672/%2F'
+QUEUE_NAME = getenv('QUEUE_NAME')
 
 redis_cache = Redis(host=CACHE_HOSTNAME, port=int(CACHE_PORT), db=0)
 
@@ -55,7 +54,7 @@ def handle_message(ch, method, properties, body):
 
 
 def main():
-    connection = pika.BlockingConnection(pika.URLParameters(CONNECTION_URL))
+    connection = pika.BlockingConnection(pika.URLParameters(CONNECTION))
     channel = connection.channel()
     channel.queue_declare(queue=QUEUE_NAME)
     channel.basic_consume(queue=QUEUE_NAME, auto_ack=True, on_message_callback=handle_message)

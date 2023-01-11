@@ -1,15 +1,9 @@
 import uvicorn as uvicorn
 from fastapi import FastAPI
-from routes.links import router as links_handler
+from presentation.routes.links import router as links_handler
 
 app = FastAPI()
 app.include_router(links_handler, tags=['link'])
-
-
-@app.get("/")
-def app_root():
-    return {"Hello" : "World"}
-
 
 
 if __name__ == "__main__":

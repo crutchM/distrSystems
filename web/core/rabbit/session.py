@@ -1,14 +1,15 @@
 import pika
 
+from os import getenv
 
-CONNECTION = 'amqp://user:password@rabbit:5672/%2F'
+CONNECTION = f'amqp://{getenv("RABBITMQ_DEFAULT_USER")}:{getenv("RABBITMQ_DEFAULT_PASS")}@{getenv("BROKER_HOST")}:5672/%2F'
 
-QUEUE_NAME = 'links'
+QUEUE_NAME = getenv('QUEUE_NAME')
+
+connection = pika.BlockingConnection(pika.URLParameters(CONNECTION))
 
 
 def publish(message: str):
-    connection = pika.BlockingConnection(pika.URLParameters(CONNECTION))
     channel = connection.channel()
     channel.basic_publish(exchange='', routing_key=QUEUE_NAME, body=message.encode('utf-8'))
     channel.close()
-    connection.close()

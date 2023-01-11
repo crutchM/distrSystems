@@ -1,14 +1,14 @@
 import json
 
 from fastapi import APIRouter
-from models.link import DataLink
-from models.link import Link
-from models.link import LinkWithStatus
+from data.link import DataLink
+from data.link import Link
+from data.link import LinkWithStatus
 from fastapi import Depends
-from deps import get_db
-import repos.links_repo as repo
+from core.db.deps import get_db
+import data.repos.links_repo as repo
 from core.rabbit import session
-from routes.middleware import throw_not_found
+from presentation.routes.middleware import throw_not_found
 
 router = APIRouter(prefix="/links")
 
